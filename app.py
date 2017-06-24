@@ -1,12 +1,12 @@
 
 
 from flask import Flask, render_template, request, redirect, url_for, session, abort
-from db.entities import db
+# from db.entities import db
 
 
 app = Flask(__name__,template_folder="templates", static_folder="static")
 app.config.from_object('settings')
-db.init_app(app)
+# db.init_app(app) uncomment when db entites are functioning
 
 # Endpoint definition
 @app.route('/')
