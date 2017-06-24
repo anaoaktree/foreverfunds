@@ -35,7 +35,7 @@ def home():
 
 @app.route('/funds')
 def funds():
-    return render_template('investor/research.html')
+    return render_template('investor/funds.html')
 
 
 @app.route('/research')
