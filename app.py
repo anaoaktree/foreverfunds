@@ -1,12 +1,15 @@
 
 
-from flask import Flask, render_template, request, redirect, url_for, session, abort
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from services import funds as funds_service
+
 # from db.entities import db
 
 
 app = Flask(__name__,template_folder="templates", static_folder="static")
 app.config.from_object('settings')
 # db.init_app(app) uncomment when db entites are functioning
+
 
 # Endpoint definition
 @app.route('/')
@@ -33,6 +36,10 @@ def home():
     return render_template('investor/home.html')
 
 
+
+
+## Funds routes
+
 @app.route('/funds')
 def funds():
     return render_template('investor/funds.html')
@@ -49,6 +56,21 @@ def research():
 def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
+
+
+
+
+@app.before_first_request
+def update_funds():
+    """
+    Gets the latest funds before the first request executes
+    :return:
+    """
+    g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
+    session['funds'] = funds_service.get_latest_funds(g_user, g_pass)
+    if not session['funds']:
+        session['messages']='User has no access to funds repo so no funds are available'
+
 
 if __name__ == "__main__":
     app.run()

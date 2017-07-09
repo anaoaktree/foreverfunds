@@ -100,3 +100,6 @@ ENV/
 
 #Pycharm
 .idea/
+
+#local settings
+local_settings.py

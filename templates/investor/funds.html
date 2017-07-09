@@ -3,13 +3,40 @@
 {% block title %} Funds page {% endblock title%}
 
 {% block content %}
-<section>
-    <h1> Funds</h1>
-    This page will display information on the funds available (fetch files from github)
-        Questions
-    <ul>
-        <li>What graphs should be displayed here? e.g. type of graph (pie chart, linear plot, etc) and what data</li>
-    </ul>
-</section>
+<link rel="stylesheet" href="static/css/dist/jquery.dataTables.min.css" />
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="static/js/funds.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.15/datatables.min.js"></script>
 
+<section>
+    <h1>Funds</h1>
+
+    <div>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            {% for fund in session.funds %}
+            <li role="presentation" class="{% if loop.index == 1 %} active {% endif %}">
+                <a href="#{{ fund.name }}" aria-controls="{{ fund.name }}" role="tab" data-toggle="tab">{{ fund.name }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            {% for fund in session.funds %}
+            <div role="tabpanel" class="tab-pane fade {% if loop.index == 1 %} in active {% endif %}"
+                 id="{{ fund.name }}">
+
+                    <table id="table-{{fund.name}}" class="table table-striped"></table>
+                    <script>
+
+                    fundsService.createAllocationTable("table-{{ fund.name }}", "{{ fund.allocation_file_url }}");
+                    </script>
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 {% endblock content %}
