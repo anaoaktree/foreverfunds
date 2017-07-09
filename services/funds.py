@@ -29,5 +29,5 @@ def get_latest_funds(user, passwd):
     github = Github(user, passwd)
     for repo in github.get_user().get_repos():
         if repo.name == 'funds_example':
-            return map(get_fund_dict, repo.get_contents('db/funds'))
+            return list(map(get_fund_dict, repo.get_contents('db/funds')))
     return []
