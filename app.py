@@ -2,6 +2,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from services import funds as funds_service
+import json
 
 # from db.entities import db
 
@@ -42,7 +43,7 @@ def home():
 
 @app.route('/funds')
 def funds():
-    return render_template('investor/funds.html')
+    return render_template('investor/funds.html', funds = json.dumps(session['funds']))
 
 
 @app.route('/research')
