@@ -58,8 +58,6 @@ def logout():
     return redirect(url_for('index'))
 
 
-
-
 @app.before_first_request
 def update_funds():
     """
