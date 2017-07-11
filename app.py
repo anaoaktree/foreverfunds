@@ -11,8 +11,6 @@ cache = SimpleCache()
 
 
 app = Flask(__name__,template_folder="templates", static_folder="static")
-app.config.from_envvar('GITHUB_USER', silent=True)
-app.config.from_envvar('GITHUB_PASSWORD', silent=True)
 app.config.from_object('settings')
 
 # db.init_app(app) uncomment when db entites are functioning

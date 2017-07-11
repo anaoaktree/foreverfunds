@@ -2,7 +2,6 @@
 Simple configuration file. It also checks if you have any local settings defined, in which case it overrides the default values
 """
 import os
-from flask import Flask
 
 SQLALCHEMY_DATABASE_URI = 'mysql://root:1234@localhost/foreverfunds'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
@@ -12,8 +11,8 @@ SECRET_KEY = os.urandom(24) ## TODO: Set a better secret
 
 # GITHUB SETTINGS
 
-GITHUB_USER= 'XXX'
-GITHUB_PASSWORD = 'YYY'
+GITHUB_USER= os.environ.get("GITHUB_USER")
+GITHUB_PASSWORD = os.environ.get("GITHUB_PASSWORD")
 
 GITHUB_FUNDS_FOLDER = 'https://github.com/chassang/funds_example/tree/master/db/funds'
 
