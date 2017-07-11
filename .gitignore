@@ -103,3 +103,4 @@ ENV/
 
 #local settings
 local_settings.py
+settings.py
