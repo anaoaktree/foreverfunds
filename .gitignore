@@ -102,4 +102,4 @@ ENV/
 .idea/
 
 #local settings
-local_settings.pysettings.py
+local_settings.py
