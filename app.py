@@ -3,6 +3,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from services import funds as funds_service
 import json
+from werkzeug.contrib.cache import SimpleCache
+cache = SimpleCache()
 
 # from db.entities import db
 
@@ -43,7 +45,7 @@ def home():
 
 @app.route('/funds')
 def funds():
-    return render_template('investor/funds.html', funds = json.dumps(session['funds']))
+    return render_template('investor/funds.html', funds = cache.get('funds'))
 
 
 @app.route('/research')
@@ -66,8 +68,8 @@ def update_funds():
     :return:
     """
     g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
-    session['funds'] = funds_service.get_latest_funds(g_user, g_pass)
-    if not session['funds']:
+    cache.set('funds', funds_service.get_latest_funds(g_user, g_pass))
+    if not cache.get('funds'):
         session['messages']='User has no access to funds repo so no funds are available'
 
 

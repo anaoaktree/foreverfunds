@@ -14,7 +14,7 @@
 
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-            {% for fund in session.funds %}
+            {% for fund in funds %}
             <li role="presentation" class="{% if loop.index == 1 %} active {% endif %}">
                 <a href="#{{ fund.name }}" aria-controls="{{ fund.name }}" role="tab" data-toggle="tab">{{ fund.name }}</a>
             </li>
@@ -23,7 +23,7 @@
 
         <!-- Tab panes -->
         <div class="tab-content">
-            {% for fund in session.funds %}
+            {% for fund in funds %}
             <div role="tabpanel" class="tab-pane fade {% if loop.index == 1 %} in active {% endif %}"
                  id="{{ fund.name }}">
 
