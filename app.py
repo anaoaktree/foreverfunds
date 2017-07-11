@@ -69,6 +69,9 @@ def update_funds():
     Gets the latest funds before the first request executes
     :return:
     """
+    print(app.config.get('GITHUB_USER'))
+    print(app.config.get('GITHUB_PASSWORD'))
+
     g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
     cache.set('funds', funds_service.get_latest_funds(g_user, g_pass))
     if not cache.get('funds'):

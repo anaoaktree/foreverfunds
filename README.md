@@ -1,5 +1,15 @@
-# TODO: write an explanation on the folder structure and code org
-# TODO: standard href with url tag (check for flask)
+
+## LOCAL config
+
+create a local_settings.py file (is ignored by git) and add your github credentials like:
+
+GITHUB_USER= 'XXX'
+GITHUB_PASSWORD = 'YYY'
+
+
+
+
+
 ### Templates
 
 Contains the template structure for the website. All templates inherit the base template.
