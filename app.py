@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 from services import funds as funds_service
 from os import environ
 from werkzeug.contrib.cache import SimpleCache
 from db.entities import db, User
-from login.login_controller import login_manager, validate_login, LoginUser
+from db.password_generator import password_generator
+from login.login_controller import login_manager, validate_password, LoginUser, hashing
 from flask_login import login_user, login_required, logout_user, current_user
 
 
@@ -74,7 +75,7 @@ def dummy_login():
         user = User.query.filter_by(username=request.form['username']).first()
         if user is None:
             return render_template('login.html', error="Given username doesn't exist!")
-        elif validate_login(user, request.form['password']):
+        elif validate_password(user, request.form['password']):
 
             log_user = LoginUser()
             log_user.id = user.username
@@ -103,6 +104,49 @@ def funds():
 @login_required
 def research():
     return render_template('investor/research.html')
+
+
+@app.route('/personal', methods=['GET', 'POST'])
+@login_required
+def personal():
+    if request.method == 'GET':
+        return render_template('investor/personal.html')
+    user = User.query.filter_by(username=current_user.id).first()
+    old_password = request.form['old_password']
+    new_password1 = request.form['new_password1']
+    new_password2 = request.form['new_password2']
+    if validate_password(user, old_password):
+        if new_password1 == new_password2:
+            user.setPassword(hashing(new_password1))
+            db.session.commit()
+            return redirect(url_for('home'))
+        else:
+            return render_template('investor/personal.html', error="Passwords don't match!")
+    else:
+        return render_template('investor/personal.html', error="Wrong password!")
+
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin():
+    if request.method == 'GET':
+        return render_template('register.html')
+    user = User.query.filter_by(username=request.form['username']).first()
+    if user is None:
+        password = password_generator()
+        if request.form.get("is_admin") is None:
+            user = User(request.form['username'], password,permission=0)
+            db.session.add(user)
+            db.session.commit()
+        else:
+            user = User(request.form['username'], password,permission=1)
+            db.session.add(user)
+            db.session.commit()
+        flash("New user sucessfully created!")
+        return redirect(url_for('admin'))
+    else:
+        return render_template('register.html', error="Given username already exists!")
+
+
 ## end investor area
 
 ## TODO: add admin to control funds and research

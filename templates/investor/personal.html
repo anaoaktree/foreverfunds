@@ -1,0 +1,28 @@
+{% extends 'investor/home.html' %}
+
+{% block title %} Personal page {% endblock title%}
+
+{% block content %}
+
+<section>
+    <h1> Personal</h1>
+    This page will provide the necessary methods for the investor to change its password.
+    {% if error %}
+        <font color="red">{{error}}</font>
+    {% endif %}
+    <form action="/personal" method="post">
+        Old password: <br>
+        <div class="form-group">
+            <input name="old_password" type="password"><br>
+        </div>
+        <div class="form-group">
+        New password: <br>
+        <input name="new_password1" type="password"><br>
+        Repeat password: <br>
+        <input name="new_password2" type="password"><br>
+        </div>
+        <button name="changePassword" type="submit">Change Password</button>
+    </form>
+</section>
+
+{% endblock content %}

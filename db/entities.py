@@ -5,6 +5,7 @@ Definition of the database schema
 from flask_sqlalchemy import SQLAlchemy
 import datetime as dt
 from login.login_controller import hashing
+from db.password_generator import password_generator
 
 db = SQLAlchemy()
 
@@ -26,6 +27,9 @@ class User(db.Model):
         self.insert_date = dt.datetime.today()
         self.last_modified = dt.datetime.today()
         self.permission = permission
+
+    def setPassword(self, password):
+        self.password = password
 
     def __repr__(self):
         return '<User %r>' % self.username

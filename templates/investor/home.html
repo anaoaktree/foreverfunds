@@ -24,6 +24,10 @@
                         <ul class="nav navbar-nav navbar-right">
                             <li><a href="/funds">Funds page</a></li>
                             <li><a href="/research"> Research page</a></li>
+                            <li><a href="/personal"> Personal page</a></li>
+                            {% if current_user.permission == 1 %}
+                                <li><a href="/admin"> Admin page</a></li>
+                            {% endif %}
                             <li><a href="/logout">Logout</a></li>
                         </ul>
                     </nav>
@@ -32,7 +36,7 @@
         </header>
 {% block content %}
 <section>
-    <h1> Hello {{ session.username }}</h1>
+    <h1> Hello {{ current_user.id }}</h1>
     This page will be the dashboard with summary about funds and research
 </section>
 {% endblock content %}
