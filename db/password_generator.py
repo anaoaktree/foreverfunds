@@ -21,5 +21,4 @@ def password_generator():
         replace_index = random.randrange(len(new_password) // 2, len(new_password))
         new_password = new_password[0:replace_index] + new_password[replace_index].upper() + new_password[replace_index + 1:]
 
-    print(new_password)
     return new_password
