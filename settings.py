@@ -3,7 +3,7 @@ Simple configuration file. It also checks if you have any local settings defined
 """
 import os
 
-SQLALCHEMY_DATABASE_URI = 'mysql://root:1234@localhost/foreverfunds'
+SQLALCHEMY_DATABASE_URI = 'sqlite://' # 'mysql://root:1234@localhost/foreverfunds'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_POOL_RECYCLE = 299
 

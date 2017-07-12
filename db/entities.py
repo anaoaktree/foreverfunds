@@ -4,8 +4,10 @@ Definition of the database schema
 
 from flask_sqlalchemy import SQLAlchemy
 import datetime as dt
+from login.login_controller import hashing
 
 db = SQLAlchemy()
+
 
 class User(db.Model):
     """
@@ -18,9 +20,12 @@ class User(db.Model):
     last_modified = db.Column(db.TIMESTAMP)
     permission = db.Column(db.Integer)
 
-    def __init__(self, username, password, permission=0): ## TODO: create permissions mapping
+    def __init__(self, username, password, permission=0):  # TODO: create permissions mapping
         self.username = username
-        self.password = password
+        self.password = hashing(password)
         self.insert_date = dt.datetime.today()
         self.last_modified = dt.datetime.today()
         self.permission = permission
+
+    def __repr__(self):
+        return '<User %r>' % self.username
