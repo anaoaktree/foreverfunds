@@ -1,0 +1,5 @@
+É necessário, naquilo que tiveres feito, removeres o uso de session. se quiseres saber, por exemplo, o nome de utilizador
+utiliza current_user.id Se quiseres saber a sua permissão, utiliza current_user.permission
+
+Se nas páginas dos funds e da research precisares de adicionar permissões de administração usa
+@admin_permission.require(http_exception=403)
