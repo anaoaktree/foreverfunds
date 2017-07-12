@@ -6,7 +6,7 @@ from db.entities import db, User
 from db.password_generator import password_generator
 from login.login_controller import login_manager, validate_password, LoginUser, hashing
 from flask_login import login_user, login_required, logout_user, current_user
-
+from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
 
 cache = SimpleCache()
 
@@ -20,6 +20,9 @@ db.app = app
 db.create_all()
 login_manager.init_app(app)
 
+principals = Principal(app)
+
+admin_permission = Permission(RoleNeed('admin'))
 
 # todo: remove this later
 admin = User('admin', 'password', 1)
@@ -27,6 +30,23 @@ investor = User('investor', 'password', 0)
 db.session.add(admin)
 db.session.add(investor)
 db.session.commit()
+
+
+#identity callback definition
+
+@identity_loaded.connect_via(app)
+def on_identity_loaded(sender, identity):
+    # Set the identity user object
+    identity.user = current_user
+
+
+    # Add the UserNeed to the identity
+    if hasattr(current_user, 'id'):
+        identity.provides.add(UserNeed(current_user.id))
+
+    if hasattr(current_user, 'permission'):
+        if current_user.permission == 1:
+            identity.provides.add(RoleNeed('admin'))
 
 
 # Login callback definitions
@@ -81,6 +101,8 @@ def dummy_login():
             log_user.id = user.username
             log_user.permission = user.permission
             login_user(log_user)
+            identity = Identity('admin') if log_user.permission == 1 else Identity('investor')
+            identity_changed.send(app, identity=identity)
             return redirect(url_for('home'))
         else:
             return render_template('login.html', error="Username/Password combination doesn't match!")
@@ -125,8 +147,10 @@ def personal():
     else:
         return render_template('investor/personal.html', error="Wrong password!")
 
+
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
+@admin_permission.require(http_exception=403)
 def admin():
     if request.method == 'GET':
         return render_template('register.html')
@@ -149,7 +173,11 @@ def admin():
 
 ## end investor area
 
-## TODO: add admin to control funds and research
+@app.errorhandler(401)
+@app.errorhandler(403)
+def authorisation_failed(e):
+    return render_template('unauthorized.html')
+
 
 @app.route('/logout')
 def logout():
