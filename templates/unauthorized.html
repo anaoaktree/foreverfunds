@@ -1,0 +1,14 @@
+{% extends 'base.html'%}
+{% block content %}
+
+<h1>Unauthorized access</h1>
+
+You were trying to acces a page that required adicional permissions.
+
+{% if current_user.is_authenticated %}
+    <a href="/home">Go Back.</a>
+{% else %}
+    <a href="/">Go Back.</a>
+{% endif %}
+
+{% endblock content %}
