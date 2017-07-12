@@ -2,16 +2,59 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from services import funds as funds_service
 from os import environ
 from werkzeug.contrib.cache import SimpleCache
+from db.entities import db, User
+from login.login_controller import login_manager, validate_login, LoginUser
+from flask_login import login_user, login_required, logout_user, current_user
+
 
 cache = SimpleCache()
-
-# from db.entities import db
 
 
 app = Flask(__name__,template_folder="templates", static_folder="static")
 app.config.from_object('settings')
 
-# db.init_app(app) uncomment when db entites are functioning
+
+db.init_app(app)
+db.app = app
+db.create_all()
+login_manager.init_app(app)
+
+
+# todo: remove this later
+admin = User('admin', 'password', 1)
+investor = User('investor', 'password', 0)
+db.session.add(admin)
+db.session.add(investor)
+db.session.commit()
+
+
+# Login callback definitions
+@login_manager.user_loader
+def user_loader(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        return
+    log_user = LoginUser()
+    log_user.id = username
+    log_user.permission = user.permission
+    return log_user
+
+
+@login_manager.request_loader
+def request_loader(request):
+    username = request.form.get('username')
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        return
+    log_user = LoginUser()
+    log_user.id = username
+    log_user.permission = user.permission
+    # this doesn't seem to be needed but I must check later
+    # log_user.is_authenticated = validate_login(user, request.form['password'])
+
+    return log_user
+
+
 
 # Endpoint definition
 @app.route('/')
@@ -28,23 +71,36 @@ def dummy_login():
     if request.method == 'GET':
         return render_template('login.html')
     else:
-        session['username'] = request.form['username']
-        return redirect(url_for('home'))
+        user = User.query.filter_by(username=request.form['username']).first()
+        if user is None:
+            return render_template('login.html', error="Given username doesn't exist!")
+        elif validate_login(user, request.form['password']):
+
+            log_user = LoginUser()
+            log_user.id = user.username
+            log_user.permission = user.permission
+            login_user(log_user)
+            return redirect(url_for('home'))
+        else:
+            return render_template('login.html', error="Username/Password combination doesn't match!")
+
 
 ## Investor private area
-## TODO: add login required decorator
 @app.route('/home')
+@login_required
 def home():
     return render_template('investor/home.html')
 
 ## Funds routes
 
 @app.route('/funds')
+@login_required
 def funds():
     return render_template('investor/funds.html', funds = cache.get('funds'))
 
 
 @app.route('/research')
+@login_required
 def research():
     return render_template('investor/research.html')
 ## end investor area
@@ -53,8 +109,8 @@ def research():
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
-    return redirect(url_for('index'))
+    logout_user()
+    return redirect(url_for('landingA'))
 
 
 @app.before_first_request
