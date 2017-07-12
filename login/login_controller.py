@@ -5,7 +5,7 @@ login_manager = LoginManager()
 
 
 # validation functions
-def validate_login(user, password):
+def validate_password(user, password):
     hashed_password = hashing(password)
     return hashed_password == user.password
 

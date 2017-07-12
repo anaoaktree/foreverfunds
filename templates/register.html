@@ -1,20 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Register</title>
-</head>
-<body>
+{% extends 'investor/home.html' %}
+
+{% block title %} Administration page {% endblock title%}
+
+{% block content %}
+
 {% if error %}
 <font color="red">{{error}}</font>
 {% endif %}
-<form action="/register" method="post">
+
+{% with messages = get_flashed_messages(with_categories=false) %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<form action="/admin" method="post">
     New Username: <br>
     <input name="username" type="text"><br>
-    New Password: <br>
-    <input name="password" type="password"><br>
-
+    <input type="checkbox" name="is_admin" value="is_admin">Check this box if the new user is admin.<br>
     <button name="doRegister" type="submit">Register</button>
 </form>
-</body>
-</html>
+
+
+{% endblock content %}
