@@ -11,7 +11,7 @@ from flask_principal import Principal, Permission, RoleNeed, Identity, identity_
 cache = SimpleCache()
 
 
-app = Flask(__name__,template_folder="templates", static_folder="static")
+app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config.from_object('settings')
 
 
@@ -32,13 +32,11 @@ db.session.add(investor)
 db.session.commit()
 
 
-#identity callback definition
-
+# identity callback definition
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
     # Set the identity user object
     identity.user = current_user
-
 
     # Add the UserNeed to the identity
     if hasattr(current_user, 'id'):
@@ -76,11 +74,11 @@ def request_loader(request):
     return log_user
 
 
-
 # Endpoint definition
 @app.route('/')
 def landingA():
     return render_template('landingA.html')
+
 
 @app.route('/about')
 def landingB():
@@ -108,18 +106,18 @@ def dummy_login():
             return render_template('login.html', error="Username/Password combination doesn't match!")
 
 
-## Investor private area
+# Investor private area
 @app.route('/home')
 @login_required
 def home():
     return render_template('investor/home.html')
 
-## Funds routes
 
+# Funds routes
 @app.route('/funds')
 @login_required
 def funds():
-    return render_template('investor/funds.html', funds = cache.get('funds'))
+    return render_template('investor/funds.html', fund=cache.get('funds'))
 
 
 @app.route('/research')
@@ -158,11 +156,11 @@ def admin():
     if user is None:
         password = password_generator()
         if request.form.get("is_admin") is None:
-            user = User(request.form['username'], password,permission=0)
+            user = User(request.form['username'], password, permission=0)
             db.session.add(user)
             db.session.commit()
         else:
-            user = User(request.form['username'], password,permission=1)
+            user = User(request.form['username'], password, permission=1)
             db.session.add(user)
             db.session.commit()
         flash("New user sucessfully created!")
@@ -171,7 +169,7 @@ def admin():
         return render_template('register.html', error="Given username already exists!")
 
 
-## end investor area
+# end investor area
 
 @app.errorhandler(401)
 @app.errorhandler(403)
@@ -197,7 +195,8 @@ def update_funds():
     g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
     cache.set('funds', funds_service.get_latest_funds(g_user, g_pass))
     if not cache.get('funds'):
-        session['messages']='User has no access to funds repo so no funds are available'
+        session['messages'] = 'User has no access to funds repo so no funds are available'
+
 
 if __name__ == "__main__":
     app.run()
