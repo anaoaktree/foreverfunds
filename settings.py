@@ -14,6 +14,9 @@ SECRET_KEY = os.urandom(24) ## TODO: Set a better secret
 GITHUB_USER= os.environ.get("GITHUB_USER")
 GITHUB_PASSWORD = os.environ.get("GITHUB_PASSWORD")
 
+# Token needed to download files - see here on how to get it https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+GITHUB_TOKEN = 'EXamP3'
+
 GITHUB_FUNDS_FOLDER = 'https://github.com/chassang/funds_example/tree/master/db/funds'
 
 

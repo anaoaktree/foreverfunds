@@ -2,8 +2,13 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from services import funds as funds_service
-from os import environ
 from werkzeug.contrib.cache import SimpleCache
+
+from bokeh.models import ColumnDataSource
+from bokeh.models.widgets import DataTable, DateFormatter, TableColumn
+from bokeh.embed import components
+from datetime import date
+from random import randint
 
 cache = SimpleCache()
 
@@ -47,7 +52,44 @@ def home():
 
 @app.route('/funds')
 def funds():
-    return render_template('investor/funds.html', funds = cache.get('funds'))
+
+    data = dict(
+        dates=[date(2014, 3, i + 1) for i in range(10)],
+        downloads=[randint(0, 100) for i in range(10)],
+    )
+    source = ColumnDataSource(data)
+
+    columns = [
+        TableColumn(field="dates", title="Date", formatter=DateFormatter()),
+        TableColumn(field="downloads", title="Downloads"),
+    ]
+    data_table = DataTable(source=source, columns=columns, width=400, height=280)
+
+    script, alloc_data = components(data_table)
+
+    js_resources = ''#INLINE.render_js()
+    css_resources = '' #INLINE.render_css()
+    allocation_divs_dict, performance_graph_dict = {}, {}
+
+    extra_resources = []
+
+    for fund in cache.get('funds'):
+        allocation_divs_dict[fund.get('name')] = alloc_data
+        graph_script, fund_graph_dict = funds_service.get_performance_graph(fund)
+        performance_graph_dict[fund.get('name')] = fund_graph_dict
+        extra_resources.append(graph_script)
+
+
+
+
+    return render_template('investor/funds.html',
+                           funds = cache.get('funds'),
+                           allocation_divs = allocation_divs_dict,
+                           performance_graphs = performance_graph_dict,
+                           js_resources = js_resources,
+                           css_resources = css_resources,
+                           extra_scripts = ''.join(extra_resources)
+                           )
 
 
 @app.route('/research')
@@ -69,11 +111,9 @@ def update_funds():
     Gets the latest funds before the first request executes
     :return:
     """
-    print(app.config.get('GITHUB_USER'))
-    print(app.config.get('GITHUB_PASSWORD'))
 
-    g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
-    cache.set('funds', funds_service.get_latest_funds(g_user, g_pass))
+    g_user, g_pass, g_token = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD'), app.config.get('GITHUB_TOKEN')
+    cache.set('funds', funds_service.get_latest_funds(g_user, g_pass, g_token))
     if not cache.get('funds'):
         session['messages']='User has no access to funds repo so no funds are available'
 
