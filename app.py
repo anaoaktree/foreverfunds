@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
+from flask_mail import Mail, Message
 from werkzeug.contrib.cache import SimpleCache
 
 from db.entities import db, User
@@ -22,6 +23,8 @@ db.create_all()
 login_manager.init_app(app)
 
 principals = Principal(app)
+
+mail = Mail(app)
 
 admin_permission = Permission(RoleNeed('admin'))
 
@@ -144,10 +147,15 @@ def personal():
     else:
         if admin_permission.can():
             user = User.query.filter_by(username=request.form['username']).first()
+            email = request.form.get('email')
             if user is None:
                 password = password_generator()
                 permission = 0 if request.form.get("is_admin") is None else 1
                 add_user(request.form['username'], password, permission)
+                msg = Message('New account at foreverfunds', recipients=[email])
+                msg.body = render_template('emails/account_creation.html', username=request.form['username'], password=password)
+                msg.html = render_template('emails/account_creation.html', username=request.form['username'], password=password)
+                mail.send(msg)
                 flash("New user sucessfully created!")
                 return redirect(url_for('personal'))
             else:
@@ -155,9 +163,7 @@ def personal():
         abort(403)
 
 
-
 # end investor area
-
 @app.errorhandler(401)
 @app.errorhandler(403)
 def authorisation_failed(e):
