@@ -1,4 +1,37 @@
 import random
+from hashlib import sha256
+from db.entities import db, User
+
+
+# password validation functions
+def validate_password(user, password):
+    hashed_password = hashing(password)
+    return hashed_password == user.password
+
+
+def hashing(password):
+    hashed_password = sha256(password.encode('utf-8'))
+    return hashed_password.hexdigest()
+
+
+# db change methods
+def add_user(username, password, permissions):
+    hashed_password = hashing(password)
+    user = User(username, hashed_password, permissions)
+    db.session.add(user)
+    db.session.commit()
+
+
+def change_password(user, old_password, new_password1, new_password2):
+    if validate_password(user, old_password):
+        if new_password1 == new_password2:
+            user.setPassword(hashing(new_password1))
+            db.session.commit()
+            return True, "Successfuly changed the password"
+        else:
+            return False, "Passwords don't match!"
+    else:
+        return False, "Wrong password!"
 
 
 # This function generates a password with 10 characters, with numbers, and lower and upper case letters
