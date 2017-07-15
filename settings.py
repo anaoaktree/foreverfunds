@@ -3,7 +3,7 @@ Simple configuration file. It also checks if you have any local settings defined
 """
 import os
 
-SQLALCHEMY_DATABASE_URI = 'mysql://root:1234@localhost/foreverfunds'
+SQLALCHEMY_DATABASE_URI = 'sqlite://' # 'mysql://root:1234@localhost/foreverfunds'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_POOL_RECYCLE = 299
 
@@ -26,6 +26,15 @@ GITHUB_FUNDS_FOLDER = 'https://github.com/chassang/funds_example/tree/master/db/
 # 'GITHUB_AUTH_URL' = 'https://HOSTNAME/login/oauth/'
 
 
+# MAIL SETTINGS
+
+MAIL_SERVER = os.environ.get("MAIL_SERVER")
+MAIL_PORT = os.environ.get("MAIL_PORT")
+MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS")
+MAIL_USE_SSL = os.environ.get("MAIL_USE_SSL")
+MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
+MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
+MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
 
 
 try:

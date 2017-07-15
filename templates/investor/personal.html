@@ -1,0 +1,47 @@
+{% extends 'investor/home.html' %}
+
+{% block title %} Personal page {% endblock title%}
+
+{% block content %}
+<header>
+    <h1> Your settings </h1>
+
+    </header>
+
+<section>
+
+    <h4>Change Password</h4>
+    This page will provide the necessary methods for the investor to change its password.
+
+    <form action="/personal" name="change_password_form" method="post">
+        Old password: <br>
+        <div class="form-group">
+            <input name="old_password" type="password" class="form-control"><br>
+        </div>
+        <div class="form-group">
+        New password: <br>
+        <input name="new_password1" type="password" class="form-control"><br>
+        Repeat password: <br>
+        <input name="new_password2" type="password" class="form-control"><br>
+        </div>
+        <button name="changePassword" value="changePassword" type="submit" class="btn btn-primary">Change Password</button>
+    </form>
+</section>
+{% if current_user.permission == 1 %}
+<section>
+<h2>Add new user</h2>
+{% if error_add_user %}
+<font color="red">{{error_add_user}}</font>
+{% endif %}
+
+<form action="/personal" name="add_user_form" method="post">
+    New Username: <br>
+    <input name="username" type="text" class="form-control"><br>
+    Email adress:<br>
+    <input name="email" type="email" class="form-control"><br>
+    <input type="checkbox" name="is_admin" value="is_admin" class="form-control">Check this box if the new user is admin.<br>
+    <button name="doRegister" value="doRegister" type="submit" class="btn btn-primary"> Register</button>
+</form>
+</section>
+{% endif %}
+{% endblock content %}

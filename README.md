@@ -1,10 +1,19 @@
-
 ## LOCAL config
 
 create a local_settings.py file (is ignored by git) and add your github credentials like:
 
 GITHUB_USER= 'XXX'
 GITHUB_PASSWORD = 'YYY'
+
+you must also add the following credentials to send an email:
+
+MAIL_SERVER = 'XXX'
+MAIL_PORT = n
+MAIL_USE_TLS = True|False
+MAIL_USE_SSL = True|False
+MAIL_USERNAME = 'mail@example.com'
+MAIL_PASSWORD = 'YYY'
+MAIL_DEFAULT_SENDER = 'mail@example.com'
 
 
 

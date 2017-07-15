@@ -1,6 +1,6 @@
 var fundsService = {
 tableNames: [],
-createAllocationTable: function(tableName, downloadUrl) {
+createAllocationTable: function(tableName, csvString) {
     this.tableNames.push(tableName);
     var tabulate = function (data, columns) {
       var table = d3.select('#'+tableName)
@@ -32,11 +32,12 @@ createAllocationTable: function(tableName, downloadUrl) {
       return table;
     }
 
-    d3.csv(downloadUrl,function (data) {
+    d3.csv.parse(csvString, function (data) {
         var columns = [''].concat(Object.keys(data[0]));
       tabulate(data,columns)
        $('#' + tableName).DataTable({
         "searching": false,
+         responsive: true,
         'paging':true});
     })
 

@@ -1,8 +1,8 @@
 {% extends 'investor/home.html' %}
 
-{% block title %} Funds page {% endblock title%}
 
-{% block content %}
+{% block extra_head %}
+
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="static/js/funds.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.15/datatables.min.js"></script>
@@ -14,7 +14,12 @@
 {{ js_resources|indent(4)|safe }}
 {{ extra_scripts|indent(4)|safe }}
 
-<div class="container">
+{% endblock %}
+
+
+{% block title %} Funds page {% endblock title%}
+
+{% block content %}
 <section>
     <h1>Funds</h1>
 
@@ -36,18 +41,17 @@
                  id="{{ fund.name }}">
                     {{ performance_graphs[fund.name]|indent(4)|safe  }}
 
-                    <!--{{ allocation_divs[fund.name]|indent(4)|safe }}-->
+                    {{ allocation_divs[fund.name]|indent(4)|safe }}
 
                     <table id="table-{{fund.name}}" class="table table-striped"></table>
-                    <script>
+                    <!--<script>-->
 
-                    fundsService.createAllocationTable("table-{{ fund.name }}", "{{ fund.allocation_file_url }}");
-                    </script>
+                    <!--fundsService.createAllocationTable("table-{{ fund.name }}", "{{ fund.allocation_file_content }}");-->
+                    <!--</script>-->
 
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
-    </div>
 {% endblock content %}

@@ -1,20 +1,12 @@
 {% extends 'base.html'%}
 {% block content %}
 
-
-{% if error %}
-<font color="red">{{error}}</font>
-{% endif %}
-<form class="form" action="/login" method="post">
+<form class="form-signin" action="/login" method="post">
     Username: <br>
-    <div class="form-group">
-    <input name="username" type="text"><br>
-        </div>
-    <div class="form-group">
+    <input name="username" type="text" class="form-control"><br>
     Password: <br>
-    <input name="password" type="password"><br>
-</div>
-    <button name="doLogin" type="submit">Login</button>
+    <input name="password" type="password" class="form-control"><br>
+    <button name="doLogin" type="submit" class="btn btn-lg btn-primary">Login</button>
 </form>
 
 {% endblock content%}
