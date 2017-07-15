@@ -2,14 +2,14 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
-
 from werkzeug.contrib.cache import SimpleCache
 from flask_mail import Mail
+
 from bokeh.resources import INLINE
 
 
 from db.entities import db, User
-from db.user_helper import change_password, validate_password
+from db.user_helper import change_password, validate_password, add_user
 from services import funds_service as funds_service
 from services.login_service import login_manager, LoginUser
 from services.email_service import send_email
@@ -216,6 +216,6 @@ def update_funds():
 if __name__ == "__main__":
     # # todo: remove this later
 
-    # add_user('admin3',  'password', 1)
-    # add_user('investor3','password', 0)
+    add_user('admin3',  'password', 1)
+    add_user('investor3','password', 0)
     app.run()
