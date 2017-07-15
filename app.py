@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
-from services import funds as funds_service
-from os import environ
-from werkzeug.contrib.cache import SimpleCache
-from db.entities import db, User
-from db.password_generator import password_generator
-from login.login_controller import login_manager, validate_password, LoginUser, hashing
+from flask import Flask, render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
+from flask_mail import Mail, Message
+from werkzeug.contrib.cache import SimpleCache
+
+from db.entities import db, User
+from db.user_helper import add_user, change_password, validate_password
+from db.user_helper import password_generator
+from services import funds as funds_service
+from services.login_controller import login_manager,LoginUser
 
 cache = SimpleCache()
 
@@ -22,14 +24,13 @@ login_manager.init_app(app)
 
 principals = Principal(app)
 
+mail = Mail(app)
+
 admin_permission = Permission(RoleNeed('admin'))
 
 # todo: remove this later
-admin = User('admin', 'password', 1)
-investor = User('investor', 'password', 0)
-db.session.add(admin)
-db.session.add(investor)
-db.session.commit()
+add_user('admin', 'password', 1)
+add_user('investor', 'password', 0)
 
 
 # identity callback definition
@@ -99,8 +100,9 @@ def dummy_login():
             log_user.id = user.username
             log_user.permission = user.permission
             login_user(log_user)
-            identity = Identity('admin') if log_user.permission == 1 else Identity('investor')
-            identity_changed.send(app, identity=identity)
+
+            identity_changed.send(app, identity=Identity(current_user.id))
+
             return redirect(url_for('home'))
         else:
             return render_template('login.html', error="Username/Password combination doesn't match!")
@@ -117,7 +119,7 @@ def home():
 @app.route('/funds')
 @login_required
 def funds():
-    return render_template('investor/funds.html', fund=cache.get('funds'))
+    return render_template('investor/funds.html', funds=cache.get('funds'))
 
 
 @app.route('/research')
@@ -131,46 +133,37 @@ def research():
 def personal():
     if request.method == 'GET':
         return render_template('investor/personal.html')
-    user = User.query.filter_by(username=current_user.id).first()
-    old_password = request.form['old_password']
-    new_password1 = request.form['new_password1']
-    new_password2 = request.form['new_password2']
-    if validate_password(user, old_password):
-        if new_password1 == new_password2:
-            user.setPassword(hashing(new_password1))
-            db.session.commit()
+    if request.form.get('doRegister') is None:
+
+        user = User.query.filter_by(username=current_user.id).first()
+        old_password = request.form['old_password']
+        new_password1 = request.form['new_password1']
+        new_password2 = request.form['new_password2']
+        status, message = change_password(user, old_password, new_password1, new_password2)
+        if status:
             return redirect(url_for('home'))
         else:
-            return render_template('investor/personal.html', error="Passwords don't match!")
+            return render_template('investor/personal.html', error=message)
     else:
-        return render_template('investor/personal.html', error="Wrong password!")
-
-
-@app.route('/admin', methods=['GET', 'POST'])
-@login_required
-@admin_permission.require(http_exception=403)
-def admin():
-    if request.method == 'GET':
-        return render_template('register.html')
-    user = User.query.filter_by(username=request.form['username']).first()
-    if user is None:
-        password = password_generator()
-        if request.form.get("is_admin") is None:
-            user = User(request.form['username'], password, permission=0)
-            db.session.add(user)
-            db.session.commit()
-        else:
-            user = User(request.form['username'], password, permission=1)
-            db.session.add(user)
-            db.session.commit()
-        flash("New user sucessfully created!")
-        return redirect(url_for('admin'))
-    else:
-        return render_template('register.html', error="Given username already exists!")
+        if admin_permission.can():
+            user = User.query.filter_by(username=request.form['username']).first()
+            email = request.form.get('email')
+            if user is None:
+                password = password_generator()
+                permission = 0 if request.form.get("is_admin") is None else 1
+                add_user(request.form['username'], password, permission)
+                msg = Message('New account at foreverfunds', recipients=[email])
+                msg.body = render_template('emails/account_creation.html', username=request.form['username'], password=password)
+                msg.html = render_template('emails/account_creation.html', username=request.form['username'], password=password)
+                mail.send(msg)
+                flash("New user sucessfully created!")
+                return redirect(url_for('personal'))
+            else:
+                return render_template('investor/personal.html', error_add_user="Given username already exists!")
+        abort(403)
 
 
 # end investor area
-
 @app.errorhandler(401)
 @app.errorhandler(403)
 def authorisation_failed(e):
