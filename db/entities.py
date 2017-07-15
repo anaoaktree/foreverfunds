@@ -16,7 +16,7 @@ class User(db.Model):
     """
     __tablename__ = 'user'
     username = db.Column(db.String(50), primary_key=True)
-    password = db.Column(db.String(70))
+    password = db.Column(db.String(128))
     insert_date = db.Column(db.TIMESTAMP)
     last_modified = db.Column(db.TIMESTAMP)
     permission = db.Column(db.Integer)

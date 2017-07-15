@@ -1,14 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
-from flask_mail import Mail, Message
 from werkzeug.contrib.cache import SimpleCache
+from flask_mail import Mail
 
 from db.entities import db, User
-from db.user_helper import add_user, change_password, validate_password
-from db.user_helper import password_generator
-from services import funds as funds_service
-from services.login_controller import login_manager,LoginUser
+from db.user_helper import change_password, validate_password, add_user
+from services import funds_service as funds_service
+from services.login_service import login_manager, LoginUser, hashing
+from services.email_service import send_email
 
 cache = SimpleCache()
 
@@ -27,10 +27,6 @@ principals = Principal(app)
 mail = Mail(app)
 
 admin_permission = Permission(RoleNeed('admin'))
-
-# todo: remove this later
-add_user('admin', 'password', 1)
-add_user('investor', 'password', 0)
 
 
 # identity callback definition
@@ -146,19 +142,16 @@ def personal():
             return render_template('investor/personal.html', error=message)
     else:
         if admin_permission.can():
-            user = User.query.filter_by(username=request.form['username']).first()
-            email = request.form.get('email')
+            new_user_name = request.form['username']
+            user = User.query.filter_by(username=new_user_name).first()
             if user is None:
-                password = password_generator()
-                permission = 0 if request.form.get("is_admin") is None else 1
-                add_user(request.form['username'], password, permission)
-                msg = Message('New account at foreverfunds', recipients=[email])
-                msg.body = render_template('emails/account_creation.html', username=request.form['username'], password=password)
-                msg.html = render_template('emails/account_creation.html', username=request.form['username'], password=password)
-                mail.send(msg)
-                flash("New user sucessfully created!")
+                new_user_email = request.form.get('email')
+                is_admin = 1 if request.form.get("is_admin")==1 else 0
+                email_body, message = send_email(new_user_name, new_user_email, is_admin, mail)
+                flash(message)
                 return redirect(url_for('personal'))
             else:
+                flash("Given username already exists!", 'Error')
                 return render_template('investor/personal.html', error_add_user="Given username already exists!")
         abort(403)
 
@@ -182,14 +175,15 @@ def update_funds():
     Gets the latest funds before the first request executes
     :return:
     """
-    print(app.config.get('GITHUB_USER'))
-    print(app.config.get('GITHUB_PASSWORD'))
-
     g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
     cache.set('funds', funds_service.get_latest_funds(g_user, g_pass))
     if not cache.get('funds'):
-        session['messages'] = 'User has no access to funds repo so no funds are available'
+        flash('User has no access to funds repo so no funds are available')
 
 
 if __name__ == "__main__":
+    # # todo: remove this later
+
+    add_user('admin3',  'password', 1)
+    add_user('investor3','password', 0)
     app.run()
