@@ -171,11 +171,11 @@ def personal():
             if user is None:
                 new_user_email = request.form.get('email')
                 is_admin = 1 if request.form.get("is_admin")==1 else 0
-                email_body, message = send_email(new_user_name, new_user_email, is_admin, mail)
+                message = send_email(new_user_name, new_user_email, is_admin, mail)
                 flash(message)
                 return redirect(url_for('personal'))
             else:
-                flash("Given username already exists!", 'Error')
+                flash("Given username already exists!", 'danger')
                 return render_template('investor/personal.html', error_add_user="Given username already exists!")
         abort(403)
 
@@ -216,6 +216,6 @@ def update_funds():
 if __name__ == "__main__":
     # # todo: remove this later
 
-    add_user('admin3',  'password', 1)
-    add_user('investor3','password', 0)
+    # add_user('admin3',  'password', 1)
+    # add_user('investor3','password', 0)
     app.run()

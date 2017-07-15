@@ -30,10 +30,7 @@
 {% if current_user.permission == 1 %}
 <section>
 <h2>Add new user</h2>
-{% if error_add_user %}
-<font color="red">{{error_add_user}}</font>
-{% endif %}
-
+    
 <form action="/personal" name="add_user_form" method="post">
     New Username: <br>
     <input name="username" type="text" class="form-control"><br>
