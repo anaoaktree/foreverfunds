@@ -3,7 +3,7 @@ Simple configuration file. It also checks if you have any local settings defined
 """
 import os
 
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') # for heroku. Add your own in your local_settings.py
+SQLALCHEMY_DATABASE_URI = 'mysql://cftech:foreverfunds1234@cftech.mysql.pythonanywhere-services.com/cftech$foreverfunds' # for python anywhere. Add your own in your local_settings.py
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_POOL_RECYCLE = 299
 
