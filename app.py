@@ -172,7 +172,7 @@ def personal():
                 new_user_email = request.form.get('email')
                 is_admin = 1 if request.form.get("is_admin")==1 else 0
                 message = send_email(new_user_name, new_user_email, is_admin, mail)
-                flash(message)
+                flash(message, 'success')
                 return redirect(url_for('personal'))
             else:
                 flash("Given username already exists!", 'danger')
