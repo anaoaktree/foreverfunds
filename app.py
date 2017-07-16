@@ -19,7 +19,7 @@ cache = SimpleCache()
 
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-app.config.from_object('settings')
+app.config.from_object('config.settings')
 
 
 db.init_app(app)
@@ -119,6 +119,9 @@ def funds():
 
     extra_resources = []
 
+    if not cache.get('funds'):
+        update_funds()
+
     for fund in cache.get('funds'):
         alloc_script, alloc_data = funds_service.get_allocation_table(fund)
         allocation_divs_dict[fund.get('name')] = alloc_data
@@ -137,9 +140,6 @@ def funds():
                            css_resources = INLINE.render_css(),
                            extra_scripts = ''.join(extra_resources)
                            )
-# =======
-#     return render_template('investor/funds.html', funds=cache.get('funds'))
-# >>>>>>> master
 
 
 @app.route('/research')
@@ -214,8 +214,4 @@ def update_funds():
 
 
 if __name__ == "__main__":
-    # # todo: remove this later
-
-    # add_user('admin3',  'password', 1)
-    # add_user('investor3','password', 0)
     app.run()

@@ -38,6 +38,6 @@ MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
 
 
 try:
-   from local_settings import *  # variables in local config will override the values above
+   from .local_settings import *  # variables in local config will override the values above
 except ImportError:
     pass
