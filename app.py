@@ -14,7 +14,7 @@ from services import funds_service as funds_service
 from services.login_service import login_manager, LoginUser
 from services.email_service import send_email
 
-
+import os
 cache = SimpleCache()
 
 
@@ -32,6 +32,9 @@ principals = Principal(app)
 mail = Mail(app)
 
 admin_permission = Permission(RoleNeed('admin'))
+
+admin = add_user('admin', 'password', 'admin@foreverfunds.com', 1)
+investor = add_user('investor', 'password', 'investor@foreverfunds.com', 0)
 
 
 # identity callback definition
@@ -170,7 +173,7 @@ def personal():
             user = User.query.filter_by(username=new_user_name).first()
             if user is None:
                 new_user_email = request.form.get('email')
-                is_admin = 1 if request.form.get("is_admin")==1 else 0
+                is_admin = 1 if request.form.get("is_admin") == 1 else 0
                 message = send_email(new_user_name, new_user_email, is_admin, mail)
                 flash(message)
                 return redirect(url_for('personal'))

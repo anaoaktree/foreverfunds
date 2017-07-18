@@ -3,9 +3,9 @@ from db.entities import db, User
 
 
 # db change methods
-def add_user(username, password, permissions):
+def add_user(username, password,email, permissions):
     hashed_password = hashing(password)
-    user = User(username, hashed_password, permissions)
+    user = User(username, hashed_password,email, permissions)
     db.session.add(user)
     db.session.commit() ## TODO: optimise this by only saving when user leaves the page (for bulk user adding)
 
