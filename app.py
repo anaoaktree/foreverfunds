@@ -14,7 +14,6 @@ from services import funds_service as funds_service
 from services.login_service import login_manager, LoginUser
 from services.email_service import send_email
 
-import os
 cache = SimpleCache()
 
 
@@ -217,8 +216,4 @@ def update_funds():
 
 
 if __name__ == "__main__":
-    # # todo: remove this later
-
-    # add_user('admin3',  'password', 1)
-    # add_user('investor3','password', 0)
     app.run()
