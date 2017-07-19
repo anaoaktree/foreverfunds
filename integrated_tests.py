@@ -5,17 +5,24 @@ import tempfile
 
 class AppTestCase(unittest.TestCase):
     def setUp(self):
-        self.db_fd, app.app.config['DATABASE'] = tempfile.mkstemp()
-        app.app.config['TESTING'] = True
         self.app = app.app.test_client()
+        app.app.config['TESTING'] = True
+        app.db.session.close()
+        app.db.drop_all()
+        app.db.create_all()
+        app.add_user('admin', 'password', 'admin@foreverfunds.com', 1)
+        app.add_user('investor', 'password', 'investor@foreverfunds.com', 0)
 
     def tearDown(self):
-        os.close(self.db_fd)
-        os.unlink(app.app.config['DATABASE'])
+        pass
 
-    def register(self, username):
-        return self.app.post('/admin', data=dict(
-            username=username
+    # usefull functions
+
+    def register(self, username, email):
+        return self.app.post('/personal', data=dict(
+            username=username,
+            email=email,
+            doRegister='doRegister'
         ), follow_redirects=True)
 
     def login(self, username, password):
@@ -27,6 +34,12 @@ class AppTestCase(unittest.TestCase):
     def logout(self):
         return self.app.get('/logout', follow_redirects=True)
 
+    # tests
+
+    def test_login(self):
+        rv = self.login('admin', 'password')
+        assert b'User successfully logged' in rv.data
+
     def test_not_logged(self):
         rv = self.app.get('/home')
         assert b'Unauthorized' in rv.data
@@ -35,24 +48,24 @@ class AppTestCase(unittest.TestCase):
         rv = self.login('user', 'password')
         assert b'Given username ' in rv.data  # I can't put the ' character because this test will fail.
 
-    def test_access_register_without_admin(self):
+    def test_add_user_not_in_investor(self):
         self.login('investor', 'password')
-        rv = self.app.get('/admin')
-        assert b'Unauthorized' in rv.data
+        rv = self.app.get('/personal')
+        assert b'Add new user' not in rv.data
 
     def test_register_without_admin(self):
         self.login('investor', 'password')
-        rv = self.register('user')
+        rv = self.register('user', 'user@foreverfunds.com')
         assert b'Unauthorized' in rv.data
 
     def test_access_register_with_admin(self):
         self.login('admin', 'password')
-        rv = self.app.get('/admin')
+        rv = self.app.get('/personal')
         assert b'Add new user' in rv.data
 
     def test_register_with_admin(self):
         self.login('admin', 'password')
-        rv = self.register('user')
+        rv = self.register('user', 'user@foreverfunds.com')
         assert b'New user sucessfully created!' in rv.data
 
     def test_password_change_works(self):
@@ -61,7 +74,9 @@ class AppTestCase(unittest.TestCase):
             old_password='password',
             new_password1='new_password',
             new_password2='new_password',
+            changePassword="changePassword"
         ), follow_redirects=True)
+        self.logout()
         self.login('investor', 'new_password')
         assert b'This page will be the dashboard with summary about funds and research' in rv.data
 
@@ -71,6 +86,7 @@ class AppTestCase(unittest.TestCase):
             old_password='password1',
             new_password1='new_password',
             new_password2='new_password',
+            changePassword="changePassword"
         ), follow_redirects=True)
         assert b'Wrong password!' in rv.data
 
@@ -80,9 +96,14 @@ class AppTestCase(unittest.TestCase):
             old_password='password',
             new_password1='new_password1',
             new_password2='new_password',
+            changePassword="changePassword"
         ), follow_redirects=True)
         assert b'Passwords don' in rv.data
 
+    def test_add_user_that_exists(self):
+        self.login('admin', 'password')
+        rv = self.register('investor', 'user@foreverfunds.com')
+        assert b"Given username already exists!" in rv.data
 
 if __name__ == '__main__':
     unittest.main()

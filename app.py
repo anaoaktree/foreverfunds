@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, Session
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
 from werkzeug.contrib.cache import SimpleCache
@@ -25,7 +25,6 @@ db.init_app(app)
 db.app = app
 db.create_all()
 login_manager.init_app(app)
-
 principals = Principal(app)
 
 mail = Mail(app)
@@ -156,7 +155,6 @@ def personal():
     if request.method == 'GET':
         return render_template('investor/personal.html')
     if request.form.get('doRegister') is None:
-
         user = User.query.filter_by(username=current_user.id).first()
         old_password = request.form['old_password']
         new_password1 = request.form['new_password1']
@@ -165,7 +163,8 @@ def personal():
         if status:
             return redirect(url_for('home'))
         else:
-            return render_template('investor/personal.html', error=message)
+            flash(message, 'danger')
+            return render_template('investor/personal.html')
     else:
         if admin_permission.can():
             new_user_name = request.form['username']
