@@ -19,7 +19,7 @@ cache = SimpleCache()
 
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-app.config.from_object('settings')
+app.config.from_object('config.settings')
 
 
 db.init_app(app)

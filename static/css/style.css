@@ -22,9 +22,10 @@ html, body {
   margin: 0 auto;
   border: 0;
   height: 100px;
-  max-width: 980px;
-  padding: 25px 0;
-  background-color: white;
+ /* max-width: 980px; */
+  padding: 25px 15%;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #d3d3d3;
   color: black;
 }
 .navbar-header {
@@ -36,6 +37,11 @@ html, body {
 }
 .navbar-brand {
   text-transform: uppercase;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: #777;
+    background-color: #f9f9f9;
 }
 
 
@@ -56,11 +62,13 @@ html, body {
   align-items: center;
 
   height: 45px;
-  background-color: white;
+  background-color: #f9f9f9;
+  border-top: 1px solid #d3d3d3;
   font-size: 16px;
   font-weight: 300;
   text-transform: uppercase;
 }
+
 .footer-content {
   margin: 0 auto;
   max-width: 980px;
@@ -97,7 +105,8 @@ html, body {
 
 .text-section {
   text-align: center;
-  background-color: #EAF4F6;
+  background-color: #f9f9f9;
+  border-top: 1px solid #d3d3d3;
 }
 .text-section .content {
   margin: 0 auto;
