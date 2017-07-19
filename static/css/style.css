@@ -1,5 +1,179 @@
-.form-signin {
-    max-width: 330px;
-    padding: 15px;
-    margin: 0 auto;
+/* General */
+html, body {
+  position: relative;
+  min-height: 100%;
+  font-family: raleway, sans-serif;
 }
+
+.main-content {
+  min-height: 100%;
+  padding-bottom: 45px;
+}
+
+/* Login page */
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+/* Nav bar */
+.navbar {
+  margin: 0 auto;
+  border: 0;
+  height: 100px;
+ /* max-width: 980px; */
+  padding: 25px 15%;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #d3d3d3;
+  color: black;
+}
+.navbar-header {
+  height: 75px;
+}
+.navbar-nav {
+  margin: 0;
+  background-color: white;
+}
+.navbar-brand {
+  text-transform: uppercase;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: #777;
+    background-color: #f9f9f9;
+}
+
+
+/* footer */
+.footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  align-items: center;
+
+  height: 45px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #d3d3d3;
+  font-size: 16px;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.footer-content {
+  margin: 0 auto;
+  max-width: 980px;
+  width: 100%;
+  padding: 0 15px;
+}
+
+/* Landing page A */
+.image-holder {
+  max-height: 600px;
+  overflow-y: hidden;
+}
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 40px;
+  text-transform: uppercase;
+}
+@media (max-width: 768px) {
+  .title {
+    font-size: 20px;
+  }
+}
+.bold {
+  font-weight: 600;
+}
+
+.text-section {
+  text-align: center;
+  background-color: #f9f9f9;
+  border-top: 1px solid #d3d3d3;
+}
+.text-section .content {
+  margin: 0 auto;
+  max-width: 700px;
+  padding: 80px 20px 20px;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 25px;
+}
+@media (max-width: 768px) {
+  .text-section .content {
+    font-size: 14px;
+  }
+}
+.paragraph {
+  margin-top: 40px;
+}
+
+.contact-section {
+  background-color: #0B3259;
+}
+.contact-section .content {
+  margin: 0 auto;
+  max-width: 980px;
+  padding: 150px 0 80px;
+  font-size: 16px;
+  font-weight: 300;
+  color: white;
+}
+.contact-section .title {
+  font-size: 42px;
+  margin-bottom: 25px;
+}
+.contact-section .link {
+  color: white;
+}
+.contact-section .input {
+  margin-bottom: 5px;
+  border: 1px solid white;
+  min-height: 40px;
+  width: 100%;
+  padding: 5px;
+  background-color: transparent;;
+}
+.contact-section textarea.input {
+  height: 120px;
+}
+.contact-section .input::-webkit-input-placeholder {
+  color: white;
+}
+.contact-section .input::-moz-placeholder {
+  color: white;
+}
+.contact-section .input::-ms-input-placeholder {
+  color: white;
+}
+.contact-section .input:-ms-input-placeholder {
+  color: white;
+}
+.contact-section .input:-moz-placeholder {
+  color: white;
+}
+.contact-section .button {
+  float: right;
+  width: 50px;
+  height: 40px;
+  padding: 3px;
+  color: black;
+}
+

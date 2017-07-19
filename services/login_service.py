@@ -39,7 +39,6 @@ def password_generator():
     return new_password
 
 
-
 # User class
 class LoginUser(UserMixin):
     def __init__(self, id, permission):
