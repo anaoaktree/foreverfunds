@@ -119,6 +119,9 @@ def funds():
 
     extra_resources = []
 
+    if not cache.get('funds'):
+        update_funds()
+
     for fund in cache.get('funds'):
         alloc_script, alloc_data = funds_service.get_allocation_table(fund)
         allocation_divs_dict[fund.get('name')] = alloc_data
@@ -137,9 +140,6 @@ def funds():
                            css_resources = INLINE.render_css(),
                            extra_scripts = ''.join(extra_resources)
                            )
-# =======
-#     return render_template('investor/funds.html', funds=cache.get('funds'))
-# >>>>>>> master
 
 
 @app.route('/research')
@@ -172,7 +172,7 @@ def personal():
                 new_user_email = request.form.get('email')
                 is_admin = 1 if request.form.get("is_admin")==1 else 0
                 message = send_email(new_user_name, new_user_email, is_admin, mail)
-                flash(message)
+                flash(message, 'success')
                 return redirect(url_for('personal'))
             else:
                 flash("Given username already exists!", 'danger')
@@ -214,8 +214,4 @@ def update_funds():
 
 
 if __name__ == "__main__":
-    # # todo: remove this later
-
-    # add_user('admin3',  'password', 1)
-    # add_user('investor3','password', 0)
     app.run()
