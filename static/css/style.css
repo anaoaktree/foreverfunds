@@ -69,6 +69,10 @@ html, body {
   text-transform: uppercase;
 }
 
+.footer.fixed {
+position:fixed;
+}
+
 .footer-content {
   margin: 0 auto;
   max-width: 980px;

@@ -30,9 +30,8 @@ principals = Principal(app)
 mail = Mail(app)
 
 admin_permission = Permission(RoleNeed('admin'))
-
-# admin = add_user('admin', 'password', 1)
-# investor = add_user('investor', 'password', 0)
+add_user('admin', 'password', 1)
+add_user('investor', 'password', 0)
 
 
 # identity callback definition
