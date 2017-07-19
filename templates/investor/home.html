@@ -3,10 +3,14 @@
 {% block title %} User home page {% endblock title %}
 
 {% block content %}
-<section>
-    <h1> Hello {{ current_user.id }}</h1>
-    This page will be the dashboard with summary about funds and research
-</section>
+<div class="container main-container">
+    {% block main_container %}
+    <section>
+        <h1> Hello {{ current_user.id }}</h1>
+        This page will be the dashboard with summary about funds and research
+    </section>
+</div>
+{% endblock main_container %}
 {% endblock content %}
 
 

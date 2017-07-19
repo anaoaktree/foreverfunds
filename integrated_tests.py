@@ -10,8 +10,8 @@ class AppTestCase(unittest.TestCase):
         app.db.session.close()
         app.db.drop_all()
         app.db.create_all()
-        app.add_user('admin', 'password', 'admin@foreverfunds.com', 1)
-        app.add_user('investor', 'password', 'investor@foreverfunds.com', 0)
+        app.add_user('admin', 'password', 1)
+        app.add_user('investor', 'password', 0)
 
     def tearDown(self):
         pass

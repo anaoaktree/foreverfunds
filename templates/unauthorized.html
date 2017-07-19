@@ -1,6 +1,7 @@
 {% extends 'base.html'%}
 {% block content %}
 
+<div class="container main-container">
 <h1>Unauthorized access</h1>
 
 You were trying to acces a page that required adicional permissions.
@@ -10,5 +11,5 @@ You were trying to acces a page that required adicional permissions.
 {% else %}
     <a href="/">Go Back.</a>
 {% endif %}
-
+</div>
 {% endblock content %}

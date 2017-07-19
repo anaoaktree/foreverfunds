@@ -57,7 +57,7 @@
 </header>
 
 
-<div class="main-content">
+<div class="container">
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -69,11 +69,11 @@
     {% endfor %}
     {% endif %}
     {% endwith %}
+</div>
 
     {% block content %}
 
-    {% endblock content%}
-</div>
+    {% endblock content %}
 
 <footer class="footer">
     <div class="footer-content">©2017 FOREVER FUNDS, SA</div>
