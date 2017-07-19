@@ -3,16 +3,43 @@
 {% block title %} Landing A {% endblock title%}
 
 {% block content %}
-<section class="container">
-    <header>
-        <h1> Landing A</h1>
-    </header>
+<div class="image-holder">
+    <img class="image" src="/static/img/main-image.png" />
+</div>
+<section class="text-section">
+    <div class="content">
+        <h2 class="title">Forever exists to solve the distinct problems of investors with long horizons</h2>
 
-    <div>
-        <p>This is landing page A which contains</p>
-        <a href="/login"> Login </a> for existing investors
-        and link to
-        <a href="/about">Landing B</a> for more information
+        <div class="paragraph">
+            <p class="bold">1. Structural changes will happen. Think of changing interest rates, inflation, or wars.</p>
+            <p>Long-term investors will almost certainly live through deep regime shifts. Yet, traditional risk management techniques assume the past predicts the future.</p>
+            <p>Our risk management framework anticipates arbitrary changes in past patterns.</p>
+        </div>
+        <div class="paragraph">
+            <p class="bold">2. Most asset managers don't share your problem.</p>
+            <p>Existing solutions are affected by ​short-term incentives, and marketing demands.</p>
+            <p>We founded Forever to serve our families, and we manage the portfolio for the next generation.​ Our incentives are aligned with yours.​</p>
+        </div>
+        <div class="paragraph">
+          <p>If you are looking to preserve and grow wealth for future generations, we should talk.</p>
+        </div>
+    </div>
+</section>
+<section class="contact-section">
+    <div class="content row">
+        <div class="content-left col-xs-12 col-sm-6">
+            <h2 class="title">Contact</h2>
+            <a class="link" href="mailto:info@forever-am.com">info@forever-am.com</a>
+        </div>
+        <form class="content-right col-xs-12 col-sm-6">
+            <input class="input" type="text" name="name" placeholder="Name" />
+            <input class="input" type="email" name="email" placeholder="Email" />
+            <input class="input" type="text" name="phone" placeholder="Phone" />
+            <input class="input" type="text" name="address" placeholder="Address" />
+            <input class="input" type="text" name="subject" placeholder="Subject" />
+            <textarea class="input" name="message" placeholder="Message"></textarea>
+            <button class="button" type="submit">Send</button>
+        </form>
     </div>
 </section>
 {% endblock content %}
