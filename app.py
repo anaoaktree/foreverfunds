@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, Session
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
 from werkzeug.contrib.cache import SimpleCache
@@ -14,7 +14,6 @@ from services import funds_service as funds_service
 from services.login_service import login_manager, LoginUser
 from services.email_service import send_email
 
-
 cache = SimpleCache()
 
 
@@ -26,12 +25,14 @@ db.init_app(app)
 db.app = app
 db.create_all()
 login_manager.init_app(app)
-
 principals = Principal(app)
 
 mail = Mail(app)
 
 admin_permission = Permission(RoleNeed('admin'))
+
+# admin = add_user('admin', 'password', 1)
+# investor = add_user('investor', 'password', 0)
 
 
 # identity callback definition
@@ -154,7 +155,6 @@ def personal():
     if request.method == 'GET':
         return render_template('investor/personal.html')
     if request.form.get('doRegister') is None:
-
         user = User.query.filter_by(username=current_user.id).first()
         old_password = request.form['old_password']
         new_password1 = request.form['new_password1']
@@ -163,14 +163,15 @@ def personal():
         if status:
             return redirect(url_for('home'))
         else:
-            return render_template('investor/personal.html', error=message)
+            flash(message, 'danger')
+            return render_template('investor/personal.html')
     else:
         if admin_permission.can():
             new_user_name = request.form['username']
             user = User.query.filter_by(username=new_user_name).first()
             if user is None:
                 new_user_email = request.form.get('email')
-                is_admin = 1 if request.form.get("is_admin")==1 else 0
+                is_admin = 1 if request.form.get("is_admin") == 1 else 0
                 message = send_email(new_user_name, new_user_email, is_admin, mail)
                 flash(message, 'success')
                 return redirect(url_for('personal'))

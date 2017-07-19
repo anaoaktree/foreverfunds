@@ -3,7 +3,9 @@ Simple configuration file. It also checks if you have any local settings defined
 """
 import os
 
+
 SQLALCHEMY_DATABASE_URI = 'mysql://cftech:foreverfunds1234@cftech.mysql.pythonanywhere-services.com/cftech$foreverfunds' # for python anywhere. Add your own in your local_settings.py
+
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_POOL_RECYCLE = 299
 
@@ -35,7 +37,6 @@ MAIL_USE_SSL = os.environ.get("MAIL_USE_SSL")
 MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
 MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
 MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
-
 
 try:
    from .local_settings import *  # variables in local config will override the values above
