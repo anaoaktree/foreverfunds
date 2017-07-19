@@ -30,9 +30,6 @@ principals = Principal(app)
 mail = Mail(app)
 
 admin_permission = Permission(RoleNeed('admin'))
-add_user('admin', 'password', 1)
-add_user('investor', 'password', 0)
-
 
 # identity callback definition
 @identity_loaded.connect_via(app)
