@@ -2,6 +2,17 @@
 
 {% block title %} Research page {% endblock title%}
 
+{% block extra_head %}
+
+<script type=text/javascript src="static/js/research.js"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+{% endblock %}
+
+{% block body_attrs %} onload="getMoreDocuments()"{% endblock %}
+
 {% block main_container %}
 
 <section>
@@ -13,6 +24,15 @@
         <li>When clicking on the newsletter, do you want it to be downloaded, open the pdf on a new page or create an html template for it?</li>
     </ul>
 
+</section>
+
+<section>
+    <form><h2>Search: </h2><input type="text" class="form-control"><button type="submit" class="btn btn-primary">Search</button ></form>
+    <h2>Recent:<br></h2>
+    <br>
+    <div id="research_documents"></div>
+    <br>
+    <center><button type="button" onclick="getMoreDocuments();" class="btn btn-lg btn-primary">More</button></center>
 </section>
 
 {% endblock main_container %}

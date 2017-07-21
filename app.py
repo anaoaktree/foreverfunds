@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, redirect, url_for, flash, abort, Session
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, session, jsonify, send_file
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
 from werkzeug.contrib.cache import SimpleCache
@@ -13,6 +13,7 @@ from db.user_helper import change_password, validate_password, add_user
 from services import funds_service as funds_service
 from services.login_service import login_manager, LoginUser
 from services.email_service import send_email
+from services.research_service import get_pdfs_from_dir, get_path
 
 cache = SimpleCache()
 
@@ -30,6 +31,11 @@ principals = Principal(app)
 mail = Mail(app)
 
 admin_permission = Permission(RoleNeed('admin'))
+
+
+
+admin = add_user('admin', 'password', 1)
+investor = add_user('investor', 'password', 0)
 
 # identity callback definition
 @identity_loaded.connect_via(app)
@@ -142,6 +148,7 @@ def funds():
 @app.route('/research')
 @login_required
 def research():
+    session['count_research'] = 0
     return render_template('investor/research.html')
 
 
@@ -208,6 +215,21 @@ def update_funds():
 
     if not cache.get('funds'):
         flash('User has no access to funds repo so no funds are available', 'warning')
+
+@app.route('/_more_research')
+@login_required
+def get_more_research():
+    files = get_pdfs_from_dir('./research_docs')
+    count = session['count_research']
+    session['count_research'] = count +1
+    return jsonify(files[count*5:count*5+5])
+
+
+@app.route('/_download_research/<file_name>')
+@login_required
+def download_file(file_name):
+    path = get_path(file_name)
+    return send_file(path)
 
 
 if __name__ == "__main__":

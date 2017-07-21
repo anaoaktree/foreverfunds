@@ -20,7 +20,7 @@
     <meta charset="UTF-8">
     <title>{% block title %} {% endblock title %}</title>
 </head>
-<body>
+<body {% block body_attrs %}{% endblock %}>
 {% block body %}
 
 <header>
