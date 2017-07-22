@@ -239,10 +239,10 @@ def download_file(file_name):
             to_download = file[1]
     return to_download
 
-@app.before_first_request
-def update_research():
-    g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
-    cache.set('research', get_latest_research(g_user, g_pass))
+# @app.before_first_request
+# def update_research():
+#     g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
+#     cache.set('research', get_latest_research(g_user, g_pass))
 
 if __name__ == "__main__":
     app.run()
