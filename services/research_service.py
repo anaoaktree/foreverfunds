@@ -1,5 +1,5 @@
 from github import Github
-import base64
+import base64, os
 
 def insertion_sort(files, new_file):
     name, time = new_file
@@ -13,6 +13,16 @@ def get_latest_research(username, password):
     for repo in github.get_user().get_repos():
         if repo.name == 'research_example':
             documents = scan_repo(repo, '.')
+    return documents
+
+def get_pdfs_from_dir(dir):
+    all_files = os.walk(dir)
+    documents = []
+    for dir, _, files in all_files:
+        for file in files:
+            if file.endswith('.pdf'):
+                insertion_sort(documents, (file, os.stat(dir + '/'+file).st_mtime))
+    documents = [x for (x, y) in documents]
     return documents
 
 

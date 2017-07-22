@@ -2,10 +2,8 @@
 
 
 {% block extra_head %}
+<link rel="stylesheet" href="static/css/calendar.css"/>
 
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="static/js/funds.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.15/datatables.min.js"></script>
 
 <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.6.min.js"></script>
 <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.6.min.js"></script>
@@ -39,9 +37,14 @@
             {% for fund in funds %}
             <div role="tabpanel" class="tab-pane fade {% if loop.index == 1 %} in active {% endif %}"
                  id="{{ fund.name }}">
+
+                <div class="col-sm-4 daterange daterange--double"></div>
+                <div class="col-sm-8">
                     {{ performance_graphs[fund.name]|indent(4)|safe  }}
 
                     {{ allocation_divs[fund.name]|indent(4)|safe }}
+
+                    </div>
 
                     <table id="table-{{fund.name}}" class="table table-striped"></table>
                     <!--<script>-->
@@ -55,3 +58,10 @@
     </div>
 </section>
 {% endblock main_container %}
+
+{% block extra_scripts %}
+<script src="static/js/moment-with-locales.js"></script>
+<script src="static/js/Calendar.js"></script>
+<script src="static/js/funds.js"></script>
+
+{% endblock %}
