@@ -7,7 +7,13 @@
 <script type=text/javascript src="static/js/research.js"></script>
 <script type=text/javascript>
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+ $(document).ready(function () {
+  $('#research_documents').selectize({});
+ }
+
 </script>
+
 
 {% endblock %}
 
@@ -18,21 +24,31 @@
 <section>
     <h1> Research </h1>
     <p>This page will show a search box and a list of recent newsletters/research.</p>
-    Questions
-    <ul>
-        <li>Do you want to search titles or content as well?</li>
-        <li>When clicking on the newsletter, do you want it to be downloaded, open the pdf on a new page or create an html template for it?</li>
-    </ul>
 
 </section>
 
 <section>
-    <form><h2>Search: </h2><input type="text" class="form-control"><button type="submit" class="btn btn-primary">Search</button ></form>
-    <h2>Recent:<br></h2>
+    <!--<div class="row">-->
+        <!--<div class="col-sm-4">-->
+            <!--<select id="search_documents" class="selectized">-->
+                <!--<option value="" selected="selected" name=""></option>-->
+            <!--</select>-->
+        <!--</div>-->
+    <!--</div>-->
+
     <br>
-    <div id="research_documents"></div>
+    <div id="research_documents" class="row">
+        <h2>Recent:<br></h2>
+        {% for file in files %}
+        <div class="col-sm-4">File date or metainfo</div>
+        <div class="col-sm-8">{{ file }}
+        </div>
+        {% endfor %}
+    </div>
     <br>
-    <center><button type="button" onclick="getMoreDocuments();" class="btn btn-lg btn-primary">More</button></center>
+    <center>
+        <button type="button" onclick="getMoreDocuments();" class="btn btn-lg btn-primary">More</button>
+    </center>
 </section>
 
 {% endblock main_container %}

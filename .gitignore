@@ -104,3 +104,4 @@ ENV/
 #local settings
 local_settings.py
 notas
+research_docs/

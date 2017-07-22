@@ -115,7 +115,7 @@ def home():
 
 # Funds routes
 @app.route('/funds')
-@login_required
+# @login_required
 def funds():
 
     allocation_divs_dict, performance_graph_dict = {}, {}
@@ -145,11 +145,17 @@ def funds():
                            )
 
 
-@app.route('/research')
+@app.route('/research', methods=['GET'])
 @login_required
 def research():
     session['count_research'] = 0
-    return render_template('investor/research.html')
+    files = get_pdfs_from_dir('./research_docs')
+    return render_template('investor/research.html', files=files)
+
+@app.route('/research/latest', methods=['POST'])
+@login_required
+def get_latest_research_route():
+    return {'research': [{'title':'June 2016', 'content': 'Fake content for june'}]}
 
 
 @app.route('/personal', methods=['GET', 'POST'])
@@ -216,14 +222,14 @@ def update_funds():
     if not cache.get('funds'):
         flash('User has no access to funds repo so no funds are available', 'warning')
 
-@app.route('/_more_research')
+@app.route('/_more_research', methods=['POST'])
 @login_required
 def get_more_research():
     files = get_pdfs_from_dir('./research_docs')
     count = session['count_research']
     session['count_research'] = count +1
-    return jsonify(files[count*5:count*5+5])
-
+    # return jsonify(files[count*5:count*5+5])
+    return jsonify(files)
 
 @app.route('/_download_research/<file_name>')
 @login_required
