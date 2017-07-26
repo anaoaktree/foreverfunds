@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, redirect, url_for, flash, abort, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, session, jsonify, send_file
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
 from werkzeug.contrib.cache import SimpleCache
@@ -13,7 +13,7 @@ from db.user_helper import change_password, validate_password, add_user
 from services import funds_service as funds_service
 from services.login_service import login_manager, LoginUser
 from services.email_service import send_email
-from services.research_service import get_latest_research
+from services.research_service import get_pdfs_from_dir, get_path
 
 cache = SimpleCache()
 
@@ -110,7 +110,29 @@ def dummy_login():
 @app.route('/home')
 @login_required
 def home():
-    return render_template('investor/home.html')
+    allocation_divs_dict, performance_graph_dict = {}, {}
+
+    extra_resources = []
+
+    if not cache.get('funds'):
+        update_funds()
+    fund = funds_service.most_recent_fund(cache.get('funds'))
+    alloc_script, alloc_data = funds_service.get_allocation_table(fund)
+    allocation_divs_dict[fund.get('name')] = alloc_data
+
+    graph_script, fund_graph_dict = funds_service.get_performance_graph(fund)
+    performance_graph_dict[fund.get('name')] = fund_graph_dict
+
+    extra_resources += ([alloc_script, graph_script])
+
+    return render_template('investor/home.html',
+                           funds=[fund],
+                           allocation_divs=allocation_divs_dict,
+                           performance_graphs=performance_graph_dict,
+                           js_resources=INLINE.render_js(),
+                           css_resources=INLINE.render_css(),
+                           extra_scripts=''.join(extra_resources)
+                           )
 
 
 # Funds routes
@@ -219,28 +241,19 @@ def update_funds():
 @app.route('/_more_research')
 @login_required
 def get_more_research():
-    if not cache.get('research'):
-        update_research()
-
+    files = get_pdfs_from_dir('./research_docs')
     count = session['count_research']
     session['count_research'] = count +1
-    return jsonify(list(map(lambda file: file[0], cache.get('research')[count*5:count*5+5])))
+
+    return jsonify(files[count*5:count*5+5])
 
 
 @app.route('/_download_research/<file_name>')
 @login_required
 def download_file(file_name):
-    to_download = None
-    print(cache.get('research'))
-    for file in cache.get('research'):
-        if file[0] == file_name:
-            to_download = file[1]
-    return to_download
+    path = get_path(file_name)
+    return send_file(path)
 
-@app.before_first_request
-def update_research():
-    g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
-    cache.set('research', get_latest_research(g_user, g_pass))
 
 if __name__ == "__main__":
     app.run()

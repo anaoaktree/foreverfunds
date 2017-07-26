@@ -1,5 +1,30 @@
 {% extends 'base.html' %}
 
+{% block extra_head %}
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="static/js/funds.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.15/datatables.min.js"></script>
+
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.6.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.6.min.js"></script>
+
+{{ css_resources|indent(4)|safe }}
+{{ js_resources|indent(4)|safe }}
+{{ extra_scripts|indent(4)|safe }}
+
+<script type=text/javascript src="static/js/research.js"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+
+{% endblock %}
+
+
+{% block body_attrs %} onload="getMoreDocuments(3)"{% endblock %}
+
+
 {% block title %} User home page {% endblock title %}
 
 {% block content %}
@@ -9,8 +34,44 @@
         <h1> Hello {{ current_user.id }}</h1>
         This page will be the dashboard with summary about funds and research
     </section>
+
+<section>
+    <h1>Funds</h1>
+
+    <div>
+
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            {% for fund in funds %}
+            <div role="tabpanel" class="tab-pane fade {% if loop.index == 1 %} in active {% endif %}"
+                 id="{{ fund.name }}">
+                    {{ performance_graphs[fund.name]|indent(4)|safe  }}
+
+                    {{ allocation_divs[fund.name]|indent(4)|safe }}
+
+                    <table id="table-{{fund.name}}" class="table table-striped"></table>
+                    <!--<script>-->
+
+                    <!--fundsService.createAllocationTable("table-{{ fund.name }}", "{{ fund.allocation_file_content }}");-->
+                    <!--</script>-->
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<section>
+    <h1> Research </h1>
+    <br>
+    <div id="research_documents"></div>
+    <center><button type="button"  onclick="window.location.href='/research'" class="btn btn-lg btn-primary">More Research</button></center>
+</section>
+
 </div>
+
 {% endblock main_container %}
+
 {% endblock content %}
 
 

@@ -11,7 +11,7 @@
 
 {% endblock %}
 
-{% block body_attrs %} onload="getMoreDocuments()"{% endblock %}
+{% block body_attrs %} onload="getMoreDocuments(5)"{% endblock %}
 
 {% block main_container %}
 
@@ -32,7 +32,7 @@
     <br>
     <div id="research_documents"></div>
     <br>
-    <center><button type="button" onclick="getMoreDocuments();" class="btn btn-lg btn-primary">More</button></center>
+    <center><button type="button" onclick="getMoreDocuments(5);" class="btn btn-lg btn-primary">More</button></center>
 </section>
 
 {% endblock main_container %}

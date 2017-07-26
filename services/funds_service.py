@@ -1,4 +1,3 @@
-
 from github import Github
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -14,11 +13,14 @@ from bokeh.layouts import widgetbox
 from datetime import date
 from random import randint
 
+import datetime
+
 import sys
 if sys.version_info[0] < 3:
     from StringIO import StringIO
 else:
-    from io import StringIO
+    from io import BytesIO
+
 
 def get_fund_dict(fund, repo):
     """
@@ -63,8 +65,7 @@ def get_latest_funds(user, passwd):
 
 
 def get_allocation_table(fund):
-
-    allocation_data = pd.read_csv(StringIO(fund.get('allocation_file_content')))
+    allocation_data = pd.read_csv(BytesIO(fund.get('allocation_file_content')))
 
     data = {col: allocation_data[col] for col in allocation_data.columns}
 
@@ -81,7 +82,7 @@ def get_allocation_table(fund):
 def get_performance_graph(fund):
     # prepare some data
     # data = requests.get(fund.get('assets_file_url'))
-    values_data = pd.read_csv(StringIO(fund.get('value_file_content')), names=['date', 'value'], skiprows=0)
+    values_data = pd.read_csv(BytesIO(fund.get('value_file_content')), names=['date', 'value'], skiprows=0)
 
     # create a new plot with a a datetime axis type
     p = figure(width=800, height=350, x_axis_type="datetime")
@@ -103,3 +104,14 @@ def get_performance_graph(fund):
     plot_resources =''.join(INLINE.js_raw + INLINE.css_raw+ INLINE.js_files+INLINE.css_files)+ script
 
     return script, html_component
+
+def most_recent_fund(funds):
+    most_recent_index = 0
+    date = datetime.datetime.strptime(funds[0].get('last_modified'), '%a, %d %b %Y %H:%M:%S GMT')
+    i = 1
+    while i < len(funds):
+        new_date= datetime.datetime.strptime(funds[i].get('last_modified'),  '%a, %d %b %Y %H:%M:%S GMT')
+        if new_date > date:
+            most_recent_index = i
+        i += 1
+    return funds[most_recent_index]
