@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, redirect, url_for, flash, abort, session, jsonify, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, session, jsonify, make_response
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_principal import Principal, Permission, RoleNeed, Identity, identity_changed, identity_loaded, UserNeed
 from werkzeug.contrib.cache import SimpleCache
@@ -13,7 +13,7 @@ from db.user_helper import change_password, validate_password, add_user
 from services import funds_service as funds_service
 from services.login_service import login_manager, LoginUser
 from services.email_service import send_email
-from services.research_service import get_pdfs_from_dir, get_path
+from services.research_service import get_latest_research, get_content
 
 cache = SimpleCache()
 
@@ -116,6 +116,10 @@ def home():
 
     if not cache.get('funds'):
         update_funds()
+
+    if not cache.get('research'):
+        update_research()
+
     fund = funds_service.most_recent_fund(cache.get('funds'))
     alloc_script, alloc_data = funds_service.get_allocation_table(fund)
     allocation_divs_dict[fund.get('name')] = alloc_data
@@ -124,7 +128,7 @@ def home():
     performance_graph_dict[fund.get('name')] = fund_graph_dict
 
     extra_resources += ([alloc_script, graph_script])
-
+    session['count_research'] = 0
     return render_template('investor/home.html',
                            funds=[fund],
                            allocation_divs=allocation_divs_dict,
@@ -170,6 +174,10 @@ def funds():
 @app.route('/research')
 @login_required
 def research():
+
+    if not cache.get('research'):
+        update_research()
+
     session['count_research'] = 0
     return render_template('investor/research.html')
 
@@ -238,10 +246,30 @@ def update_funds():
     if not cache.get('funds'):
         flash('User has no access to funds repo so no funds are available', 'warning')
 
+
+@app.before_first_request
+def update_research():
+    """
+    Gets the latest funds before the first request executes
+    :return:
+    """
+
+    g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
+    cache.set('research', get_latest_research(g_user, g_pass))
+
+
+    if not cache.get('research'):
+        flash('User has no access to research repo so no research is available', 'warning')
+
+
+
 @app.route('/_more_research')
 @login_required
 def get_more_research():
-    files = get_pdfs_from_dir('./research_docs')
+    if not cache.get('research'):
+        update_research()
+
+    files = cache.get('research')
     count = session['count_research']
     session['count_research'] = count +1
 
@@ -251,8 +279,25 @@ def get_more_research():
 @app.route('/_download_research/<file_name>')
 @login_required
 def download_file(file_name):
-    path = get_path(file_name)
-    return send_file(path)
+    g_user, g_pass = app.config.get('GITHUB_USER'), app.config.get('GITHUB_PASSWORD')
+
+    if not cache.get('research'):
+        update_research()
+    print(file_name)
+    path = None
+    for doc in cache.get('research'):
+        if doc.get('filename') == file_name:
+            path = doc.get('path')
+    if path is None:
+        flash('No such file!')
+        return redirect(url_for('home'))
+    else:
+        data = get_content(path, g_user, g_pass)
+        response = make_response(data)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = \
+            'inline; filename=%s' % file_name
+        return response
 
 
 if __name__ == "__main__":

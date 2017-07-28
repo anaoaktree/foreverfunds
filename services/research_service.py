@@ -19,7 +19,8 @@ else:
 
 def insertion_sort(files, new_file, path):
     name, time = new_file
-    title, abstract = get_title_abstract(path)
+    fp = open(path, 'rb')
+    title, abstract = get_title_abstract(fp)
     i = 0
     while i < len(files) and files[i]['time'] < time:
         i += 1
@@ -51,9 +52,7 @@ def get_path(file_name):
 
 # pdf reading and processing functions
 
-def get_title_abstract(pdf_file):
-    print(pdf_file)
-    fp = open(pdf_file, 'rb')
+def get_title_abstract(fp):
     parser = PDFParser(fp)
     doc = PDFDocument()
     parser.set_document(doc)
@@ -94,9 +93,11 @@ def get_latest_research(user, passwd):
             for file in repo.get_contents('db/research'):
                 data = file.raw_data
                 if type(data) is dict and '.pdf' in data.name:
-                    insertion_sort2(documents, get_research_dict(data))
+                    insertion_sort2(documents, get_research_dict(file))
                 elif type(data) is list:
-                    map(lambda research: insertion_sort2(documents, research), get_research_list(data, repo))
+                    docs =  get_research_list(data, repo)
+                    for doc in docs:
+                        insertion_sort2(documents, doc)
     return documents
 
 
@@ -106,19 +107,19 @@ def get_research_dict(file):
     :param file: the pdf from github we want to process
     :return: dictionary with the relevant information about the pdf
     """
-
+    time = datetime.datetime.strptime(file.last_modified, '%a, %d %b %Y %H:%M:%S GMT')
+    file = file.raw_data
     name = file.get('name')
-    data = base64.b64decode(file.content)
-    time = datetime.datetime.strptime(file.get('last_modified'), '%a, %d %b %Y %H:%M:%S GMT')
+    data = base64.b64decode(file.get('content'))
     title, abstract = get_title_abstract(BytesIO(data))
     path = file.get('path')
-    return {'name': name, 'time': time, 'title': title, 'abstract': abstract, 'path': path}
+    return {'filename': name, 'time': time, 'title': title, 'abstract': abstract, 'path': path}
 
 
 def get_research_list(directory, repo):
     documents = []
-    for file in directory.raw_data:
-        if '.pdf' in file.name:
+    for file in directory:
+        if '.pdf' in file.get('name'):
             actual_file = repo.get_contents(file.get('path'))
             documents.append(get_research_dict(actual_file))
     return documents
@@ -129,3 +130,10 @@ def insertion_sort2(documents, research):
     while i < len(documents) and documents[i]['time'] < research['time']:
         i += 1
     documents.insert(i, research)
+
+def get_content(path, user, passwd):
+    github = Github(user, passwd)
+    repo = github.get_user().get_repo('research_example')
+    file = repo.get_contents(path)
+    data = base64.b64decode(file.content)
+    return data
