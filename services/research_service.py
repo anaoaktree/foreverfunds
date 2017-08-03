@@ -9,6 +9,7 @@ def insertion_sort(files, new_file):
     files.insert(i, new_file)
 
 def get_latest_research(username, password):
+    documents = []
     github = Github(username, password)
     for repo in github.get_user().get_repos():
         if repo.name == 'research_example':
