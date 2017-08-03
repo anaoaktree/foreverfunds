@@ -1,0 +1,7 @@
+\expandafter\ifx\csname doTocEntry\endcsname\relax \expandafter\endinput\fi
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{1}{x1-1000}{QQ2-1-1}{Our First Fund: Forever Dynamic Core!}}{1}\relax 
+\doTocEntry\toclof{1}{\csname a:TocLink\endcsname{1}{x1-10011}{}{\ignorespaces backtested performance (log scale)}}{figure}\relax 
+\doTocEntry\toclof{2}{\csname a:TocLink\endcsname{1}{x1-10022}{}{\ignorespaces live performance consistent with backtest}}{figure}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{1}{x1-2000}{QQ2-1-4}{What's Next: Forever Dynamic Edge \ldots  }}{8}\relax 
+\doTocEntry\toclof{3}{\csname a:TocLink\endcsname{1}{x1-20013}{}{\ignorespaces backtested performance (log scale)}}{figure}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{1}{x1-3000}{QQ2-1-6}{Team and Vision.}}{11}\relax 
